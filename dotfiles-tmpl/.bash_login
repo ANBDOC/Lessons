@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+echo USE bash_login LUKE for ssh commands!

@@ -1,0 +1,82 @@
+# pip3 install pep8
+# pep8 <filenamee.py>
+# pip3 install autopep8
+# autopep8 --in-place <filename.py>
+
+## echo "export PYTHONSTARTUP=$HOME/.pythonstartup"  >> ~/.bashrc
+## source  ~/.bashrc
+
+import os 
+import sys
+import builtins
+
+import pdb
+import readline 
+import rlcompleter 
+import atexit 
+
+
+def _notify(msg):
+    print("-=> %s" % msg, file=sys.stderr)
+
+EDITOR = os.environ.get('EDITOR', 'vim')
+editorbase = EDITOR.split('/')[-1]
+TERMINAL = 'urxvt'
+# Functions automatically added to the builtins namespace so that you can
+# use them in the debugger and other unusual environments
+autobuiltins = ['edit', 'which', 'ls', 'cd', 'mv', 'cp', 'rm', 'help', 'rmdir',
+                'ln', 'pwd', 'pushd', 'popd', 'env', 'mkdir', 'bin']
+
+
+# Colorize the prompts if possible (This is probably non-portable muck)
+# Thanks to Stephan Fiedler for the fix!
+pre = None
+suf = None
+TERM = os.environ.get('TERM', None)
+if sys.stderr.isatty():
+    if TERM in ['xterm', 'vt100']:
+        pre = "\033[1;32m"  # Turn the text green
+        suf = "\033[0m"     # Reset to normal
+
+if pre and suf:
+    sys.ps1 = pre + ">>>" + suf + " "
+    sys.ps2 = pre + "..." + suf + " "
+    _notify(pre + "color prompts" + suf)
+
+    # Set up colorized tracebacks
+    # Make sure to do this *before* installing LazyPython
+    try:
+        import ultraTB
+        sys.excepthook = ultraTB.ColorTB()
+        _notify("ColorTB")
+    except ImportError:
+        pass
+
+# LazyPython only works for Python versions 2.1 and above
+try:
+    # Try to use LazyPython
+    from LazyPython import LazyPython
+    sys.excepthook = LazyPython()
+    _notify("LazyPython")
+except ImportError:
+    pass
+
+# tab completion 
+readline.parse_and_bind('tab: complete') 
+readline.parse_and_bind("set show-all-if-ambiguous on")
+readline.parse_and_bind("tab: complete")
+# history file 
+histfile = os.path.join(os.environ['HOME'], '.pythonhistory') 
+try: 
+        readline.read_history_file(histfile) 
+except IOError: 
+        pass 
+        
+atexit.register(readline.write_history_file, histfile) 
+
+def pwd():
+    """Print current working directory path.
+    Usage:  >>> pwd()
+    """
+    print(os.getcwd())
+# del os, histfile, readline, rlcompleter

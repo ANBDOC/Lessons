@@ -1,0 +1,108 @@
+#  screen -r     ==> resumes a detached screen session
+#  screen -x     ==> Cool, Attach to a not detached screen session. (Multi display mode)
+# detach : Press F10 or "C-a d"
+# HELP: "C-a, ?"
+# "C-a C-a" : fast switch between 2 screens
+escape ``
+altscreen on 	# Refresh the display when exiting programs like vim, nano, irssi and etc.
+defutf8 on
+defc1 off 	# treat input chars 128 ~ 159 as control functions
+defflow on
+vbell_msg "Ding Ding!!"
+vbell off  	# i.e. set to audible bell, used to redirect bell to terminal (putty) for "flashing effect"
+defencoding utf8
+# cjkwidth on
+#
+# 256 Color Support
+termcapinfo xterm "Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm"
+caption always "%{+b rk}%H%{gk} |%c %{yk}%d.%m.%Y | %{wk} %?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%? | %{rk} Load: %l %{wk}"
+term $TERM # depend on $TERM
+term xterm # or specified term
+
+#allow bold colors - necessary for some reason
+attrcolor b ".I"
+attrcolor i "+b"
+
+# erase background with current bg color
+defbce on
+term screen-256color
+msgwait 1
+hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %d/%m %{W}%c %{g}]'
+nethack on
+startup_message off 
+autodetach on
+# some environment setting
+autodetach on
+startup_message off
+shell -$SHELL
+# setup 1000 lines of available scrollback copy/paste
+# NOTE: memory eating monster...
+defscrollback 10000
+
+# If a window goes unresponsive, don't block the whole session waiting for it.
+nonblock on
+
+# fix scrollback in putty, this is cool!
+termcapinfo xterm* ti@:te@
+
+# turn-off log
+#log off
+logfile $HOME/tmp/screen-%Y%m%d-%n.log
+#deflog on
+caption always "%{= KW}%-w%{= kc} [%n] %t %{-}%+w %-= %{= Kk}[%H | %l | %m/%d %c]"
+
+bindkey "^[O5D" prev
+bindkey "^[O5C" next
+bindkey "^[Od" prev
+bindkey "^[Oc" next
+bindkey "\033[D" prev
+bindkey "\033[C" next
+# putty
+bindkey "^[[D" prev
+bindkey "^[[C" next
+# gnome-terminal
+bindkey "^[[1;5D" prev
+bindkey "^[[1;5C" next
+#
+# Vim HJKL-style
+# Alt + H : prev
+# Alt + L : next
+bindkey "^[H" prev
+bindkey "^[L" next
+
+# C-a $num : Switch to window number 0 - 9, or to the blank window.
+bindkey "^[[A" number 1
+
+# F10 : detach
+bindkey -k k; detach
+
+# set the title for the default shell or specified program.
+screen -t Tab1     1
+screen -t Tab2     2
+screen -t Tab3     3
+screen -t Tab4     4
+#screen -t Top      10 htop
+#
+# Start at window 1
+bind c screen 1
+bind 0 select 10
+select 1
+
+#Hotkey for window resizing
+bind = resize =
+bind + resize +1
+bind - resize -1
+bind _ resize max
+
+# Ctrl + ARROW_UP/ARROW_DOWN
+bindkey "^[[A" resize +1
+bindkey "^[[B" resize -1
+#
+# Useful bindings as Vim(hjkl)
+bind j focus down
+bind k focus up
+bind h focus left
+bind l focus right
+
+# mouse tracking allows to switch region focus by clicking
+#mousetrack on
